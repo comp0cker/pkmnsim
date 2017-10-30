@@ -26,8 +26,21 @@ function parse_input(input)
         name = input.substr(0, pos);
         url += name + "&setCode=" + set_convert(set);
     }
+    else if (input.charAt(input.length - 3) == " ")
+    {
+        var pos = input.length - 3;
+        var set = input.substr(pos + 1, 2);
+        name = input.substr(0, pos);
+        url += name + "&setCode=" + set_convert(set);
+    }
     else
+    {
         url += name;
+        if (input.charAt(0).toUpperCase() == "N" && input.length == 1)
+            url += "&id=bw3-101";
+    }
+
+    alert(url);
 
     return url;
 }
@@ -67,7 +80,7 @@ function set_convert(abbr){
         return "xy3";
     if (abbr == "FLF")
         return "xy2";
-    if (abbr == "XY ")
+    if (abbr == "XY")
         return "xy1";
     if (abbr == "KSS")
         return "xy0";
