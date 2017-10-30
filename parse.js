@@ -1,48 +1,99 @@
 function get_card(input)
 {
+    var count = get_count(input);
+    input = crop_count(input);
     var url = parse_input(input);
-
-    alert("ready..." + input);
 
     $.ajax({
         async: false,
         url: url,
         success: function (data) {
-            $(".print").append("<img src='" + data.cards[0].imageUrl + "'height=" + card_height + ">");
-            alert("bingo!");
+            for (var i = 0; i < count; i++)
+                $(".print").append("<img src='" + data.cards[0].imageUrl + "'height=" + card_height + ">");
         }
     });
 }
 
-function parse_input(input)
+function get_deck(input)
+{
+    var lines = input.split('\n');
+    for(var i = 0; i < lines.length; i++){
+        get_card(lines[i]);
+    }
+}
+
+function parse_input(line)
 {
     var url = "https://api.pokemontcg.io/v1/cards/?name=";
-    var name = input;
 
-    if (input.charAt(input.length - 4) == " ")
+    var name = url_set_name(line);
+    url = url_add_set(url, line, name);
+
+    return url;
+}
+
+function get_count(line){
+    var card_count = 1;
+
+    if (!isNaN(line.charAt(0)) && line.charAt(1) == " ")// if count is one digit number
+        card_count = parseInt(line.substr(0, 1));
+
+    else if (!isNaN(line.charAt(0)) && !isNaN(line.charAt(1)) && input.charAt(2) == " ") // if count is two digit number
+        card_count = parseInt(line.substr(0, 2));
+
+    // if else, card_count stays equal to 1
+
+    return card_count;
+}
+
+function crop_count(line){
+    if (!isNaN(line.charAt(0)) && line.charAt(1) == " ")// if count is one digit number
+        return line.substr(2, line.length - 1);
+
+    else if (!isNaN(line.charAt(0)) && !isNaN(line.charAt(1)) && input.charAt(2) == " ") // if count is two digit number
+        return line.substr(3, line.length - 1);
+
+    return line;
+}
+
+function url_add_set(url, line, name){
+    var set;
+
+    if (line.length >= 4 && line.charAt(line.length - 4) == " ") // if setCode is three characters long
     {
-        var pos = input.length - 4;
-        var set = input.substr(pos + 1, 3);
-        name = input.substr(0, pos);
+        set = line.substr(line.length - 3, 3);
         url += name + "&setCode=" + set_convert(set);
     }
-    else if (input.charAt(input.length - 3) == " ")
+    else if (line.length >= 3 && line.charAt(line.length - 3) == " ") // if setCode is four characters long
     {
-        var pos = input.length - 3;
-        var set = input.substr(pos + 1, 2);
-        name = input.substr(0, pos);
+        set = line.substr(line.length - 2, 2);
         url += name + "&setCode=" + set_convert(set);
     }
     else
     {
-        url += name;
-        if (input.charAt(0).toUpperCase() == "N" && input.length == 1)
-            url += "&id=bw3-101";
+        url += name + url_name_exceptions(url, line);
     }
 
-    alert(url);
-
     return url;
+}
+
+function url_set_name(line){
+    if (line.length >= 4 && line.charAt(line.length - 4) == " ") // if setCode is three characters long
+        return (line.substr(0, line.length - 4));
+
+    else if (line.length >= 3 && line.charAt(line.length - 3) == " ") // if setCode is four characters long
+        return (line.substr(0, line.length - 3));
+
+    return line;
+}
+
+function url_name_exceptions(url, line){
+    if (line.charAt(0).toUpperCase() == "N" && line.length == 1) // if N
+        return ("&id=xy10-105");
+    if (line.includes("sycamore"))
+        return ("&id=xy4-101");
+
+    return "";
 }
 
 function set_convert(abbr){

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="card.js"></script>
+    <script src="deck.js"></script>
     <script src="parse.js"></script>
     <script src="const.js"></script>
 </head>
@@ -10,7 +10,11 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <p>Enter a card: <input id="test_input" type="text"></p>
-    <button onclick="get_card($('#test_input').val())">click</button>
+    <button onclick="get_card($('#test_input').val(), 1)">click</button>
+
+    <p>Enter a deck: </p>
+    <textarea id="deck_input"></textarea>
+    <button onclick="get_deck($('#deck_input').val())">click</button>
 
     <div class = "print"></div>
 </body>
